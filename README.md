@@ -1,6 +1,6 @@
 # Sovereign Omni-Tool (`sov`)
 
-[![CI](https://github.com/jimmychau1997/sovereign-omni-tool/actions/workflows/ci.yml/badge.svg)](https://github.com/jimmychau1997/sovereign-omni-tool/actions/workflows/ci.yml)
+[![CI](https://github.com/jimmychau1997/sovereign-omni-tool/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/jimmychau1997/sovereign-omni-tool/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Rust](https://img.shields.io/badge/rust-1.85%2B-orange.svg)](https://www.rust-lang.org)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org)
