@@ -179,11 +179,11 @@ fn get_tool_dirs() -> Vec<PathBuf> {
     dirs
 }
 
-/// Scans all tool directories and returns a sorted, deduplicated list of tool names.
-fn discover_tools() -> Vec<String> {
+/// Scans the given directories and returns a sorted, deduplicated list of tool names.
+fn discover_tools_in_dirs(dirs: &[PathBuf]) -> Vec<String> {
     let mut tools = Vec::new();
-    for dir in get_tool_dirs() {
-        if let Ok(entries) = std::fs::read_dir(&dir) {
+    for dir in dirs {
+        if let Ok(entries) = std::fs::read_dir(dir) {
             for entry in entries.flatten() {
                 let path = entry.path();
                 if path.extension().and_then(|ext| ext.to_str()) == Some("py")
@@ -201,15 +201,25 @@ fn discover_tools() -> Vec<String> {
     tools
 }
 
-/// Searches all tool directories for `<name>.py` and returns the first match.
-fn find_tool(name: &str) -> Option<PathBuf> {
-    for dir in get_tool_dirs() {
+/// Scans all tool directories and returns a sorted, deduplicated list of tool names.
+fn discover_tools() -> Vec<String> {
+    discover_tools_in_dirs(&get_tool_dirs())
+}
+
+/// Searches `dirs` for `<name>.py` and returns the first match.
+fn find_tool_in_dirs(name: &str, dirs: &[PathBuf]) -> Option<PathBuf> {
+    for dir in dirs {
         let candidate = dir.join(format!("{name}.py"));
         if candidate.exists() {
             return Some(candidate);
         }
     }
     None
+}
+
+/// Searches all tool directories for `<name>.py` and returns the first match.
+fn find_tool(name: &str) -> Option<PathBuf> {
+    find_tool_in_dirs(name, &get_tool_dirs())
 }
 
 /// Loads optional tool descriptions from `arsenal_dump.json` located next to
@@ -416,18 +426,11 @@ mod tests {
     }
 
     #[test]
-    fn discover_tools_with_env_path() {
+    fn discover_filters_test_and_init_files() {
         let tmp = TempDir::new().unwrap();
         make_tool_dir(tmp.path(), &["foo", "bar", "test_ignored", "__init__"]);
 
-        // SAFETY: single-threaded test; no other thread reads SOV_TOOLS_PATH.
-        unsafe {
-            std::env::set_var("SOV_TOOLS_PATH", tmp.path().to_str().unwrap());
-        }
-        let tools = discover_tools();
-        unsafe {
-            std::env::remove_var("SOV_TOOLS_PATH");
-        }
+        let tools = discover_tools_in_dirs(&[tmp.path().to_path_buf()]);
 
         assert!(
             tools.contains(&"foo".to_string()),
@@ -448,35 +451,23 @@ mod tests {
     }
 
     #[test]
-    fn find_tool_with_env_path() {
+    fn find_tool_locates_py_file() {
         let tmp = TempDir::new().unwrap();
         make_tool_dir(tmp.path(), &["my_tool"]);
 
-        // SAFETY: single-threaded test; no other thread reads SOV_TOOLS_PATH.
-        unsafe {
-            std::env::set_var("SOV_TOOLS_PATH", tmp.path().to_str().unwrap());
-        }
-        let result = find_tool("my_tool");
-        unsafe {
-            std::env::remove_var("SOV_TOOLS_PATH");
-        }
+        let result = find_tool_in_dirs("my_tool", &[tmp.path().to_path_buf()]);
 
         assert!(result.is_some(), "should find my_tool.py");
         assert!(result.unwrap().exists());
     }
 
     #[test]
-    fn find_tool_missing_returns_none() {
+    fn find_tool_returns_none_for_missing_tool() {
         let tmp = TempDir::new().unwrap();
-        // SAFETY: single-threaded test; no other thread reads SOV_TOOLS_PATH.
-        unsafe {
-            std::env::set_var("SOV_TOOLS_PATH", tmp.path().to_str().unwrap());
-        }
-        let result = find_tool("definitely_not_a_real_tool_xyz");
-        unsafe {
-            std::env::remove_var("SOV_TOOLS_PATH");
-        }
-
+        let result = find_tool_in_dirs(
+            "definitely_not_a_real_tool_xyz",
+            &[tmp.path().to_path_buf()],
+        );
         assert!(result.is_none());
     }
 
@@ -485,17 +476,9 @@ mod tests {
         let tmp1 = TempDir::new().unwrap();
         let tmp2 = TempDir::new().unwrap();
         make_tool_dir(tmp1.path(), &["zebra", "apple"]);
-        make_tool_dir(tmp2.path(), &["apple", "mango"]); // 'apple' appears twice
+        make_tool_dir(tmp2.path(), &["apple", "mango"]); // 'apple' appears in both dirs
 
-        let path_val = std::env::join_paths([tmp1.path(), tmp2.path()]).unwrap();
-        // SAFETY: single-threaded test; no other thread reads SOV_TOOLS_PATH.
-        unsafe {
-            std::env::set_var("SOV_TOOLS_PATH", &path_val);
-        }
-        let tools = discover_tools();
-        unsafe {
-            std::env::remove_var("SOV_TOOLS_PATH");
-        }
+        let tools = discover_tools_in_dirs(&[tmp1.path().to_path_buf(), tmp2.path().to_path_buf()]);
 
         assert_eq!(tools, vec!["apple", "mango", "zebra"]);
     }
