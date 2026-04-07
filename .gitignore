@@ -4,3 +4,7 @@
 *.pyc
 *.log
 tools.txt
+.env
+.DS_Store
+dist/
+*.egg-info/

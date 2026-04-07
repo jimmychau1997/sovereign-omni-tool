@@ -1,51 +1,286 @@
 # Sovereign Omni-Tool (`sov`)
 
-A unified developer toolkit built combining the execution speed of Rust with the extensive ecosystem of Python. 
+[![CI](https://github.com/jimmychau1997/sovereign-omni-tool/actions/workflows/ci.yml/badge.svg)](https://github.com/jimmychau1997/sovereign-omni-tool/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Rust](https://img.shields.io/badge/rust-1.85%2B-orange.svg)](https://www.rust-lang.org)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org)
 
-Sovereign provides a single executable spanning over 114 different sub-commands, neatly packed into 4 core functional domains. It aims to provide convenience, speed, and standardisation to everyday development, security reconnaissance, and data processing tasks.
+> A unified developer Swiss Army Knife — 114+ utilities spanning system ops,
+> security recon, developer tooling, and data processing. Built with a
+> blazing-fast Rust dispatcher and a pluggable Python tool ecosystem.
 
-## 🛠 Features
+---
 
-- **Blazing Fast Dispatcher:** Built in Rust using Tokio, the `sov` dispatcher securely and instantly spawns Python subsystems with zero latency.
-- **MCP Server Ready:** Comes out-of-the-box with a Python `FastMCP` wrapper (`sov_mcp.py`). Expose all 114 utilities instantly to any LLM (e.g. Claude or OpenClaw) without writing custom schemas.
-- **Dependency Free Approach:** Most tools are completely native to standard Python libraries where possible.
+## Table of Contents
 
-## 📦 What's Inside? 
+- [Features](#-features)
+- [Tool Categories](#-tool-categories)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [Tool Discovery](#-tool-discovery)
+- [MCP Server](#-mcp-server)
+- [Adding Your Own Tools](#-adding-your-own-tools)
+- [Configuration](#-configuration)
+- [Development](#-development)
+- [Contributing](#-contributing)
+- [License](#-license)
 
-The 114 utilities are roughly categorized into four groups:
+---
 
-1. **System & DevOps Operations** 
-   *Examples:* `ansible_runner`, `terraform_validator`, `docker_compose_generator`, `system_resource_monitor`.
-2. **Security & Reconnaissance**
-   *Examples:* `port_scanner`, `ip_geolocator`, `rbac_policy_manager`, `password_gen`, `secret_scanner`.
-3. **Developer Tooling**
-   *Examples:* `api_mock_server`, `sql_builder`, `code_line_counter`.
-4. **Data & Media Processing**
-   *Examples:* `csv_to_json`, `json_diff`, `image_resizer`, `hash_calculator`, `base64_codec`.
+## ✨ Features
 
-## 🚀 Getting Started
+| Feature | Description |
+|---------|-------------|
+| **Blazing-fast dispatcher** | Rust + Tokio — zero-latency tool invocation |
+| **114+ utilities** | Spanning 4 functional domains |
+| **Plug-in architecture** | Drop a `.py` file in `tools/` — it's immediately available |
+| **MCP Server ready** | Expose every tool to any LLM client in one command |
+| **Portable** | No hardcoded paths — works anywhere out of the box |
+| **Dependency-light** | Tools rely on the Python standard library wherever possible |
 
-1. Clone the repository and build the Rust dispatcher:
-   ```bash
-   cargo build --release
-   ```
-2. The binary will be available at `target/release/sov`. 
-3. Link or alias it to your `$PATH` for global use!
-   ```bash
-   sov list
-   ```
+---
 
-### Using as an MCP Server
+## 📦 Tool Categories
 
-Start the bundled MCP API service directly:
+### 1 — System & DevOps Operations
+
+`ansible_runner` · `backup_manager` · `cicd_pipeline_generator` ·
+`cron_manager` · `database_backup` · `disk_space_analyzer` ·
+`docker_compose_generator` · `env_var_manager` · `environment_manager` ·
+`file_watcher` · `memory_profiler` · `process_monitor` · `service_manager` ·
+`symlink_manager` · `system_benchmark` · `system_info_reporter` ·
+`system_resource_monitor` · `terraform_validator`
+
+### 2 — Security & Reconnaissance
+
+`api_rate_limiter` · `certificate_parser` · `dns_lookup` ·
+`http_client_tester` · `http_logger` · `http_request_builder` · `ip_calc` ·
+`ip_geolocator` · `jwt_decoder` · `network_speed_tester` ·
+`network_traffic_analyzer` · `password_gen` · `password_generator` ·
+`port_scanner` · `rbac_policy_manager` · `secret_scanner` · `ssl_cert_checker`
+
+### 3 — Developer Utilities
+
+`api_doc_generator` · `api_mock_server` · `assertion_lib` ·
+`changelog_generator` · `code_counter` · `code_line_counter` ·
+`dependency_checker` · `dependency_scanner` · `git_statistics` ·
+`license_generator` · `mock_generator` · `sql_builder` · `sql_builder_clean` ·
+`sql_query_builder` · `task_timer` · `todo_scanner` · `websocket_client`
+
+### 4 — Data & Media Processing
+
+`base64_codec` · `batch_processor` · `checksum_calculator` · `clipboard_manager` ·
+`color_converter` · `color_themes` · `config_validator` · `csv_analyzer` ·
+`csv_merger` · `csv_to_json` · `data_serializer` · `data_validator` ·
+`duplicate_file_finder` · `email_validator` · `encoding_detector` ·
+`excel_to_csv` · `file_merger` · `file_renamer` · `file_splitter` ·
+`hash_calculator` · `hash_gen` · `image_metadata_extractor` · `image_resizer` ·
+`image_watermarker` · `json_diff` · `json_pretty` · `json_schema_validator` ·
+`json_to_sql` · `json_yaml_converter` · `log_aggregator` · `log_file_analyzer` ·
+`log_parser` · `lorem_gen` · `lorem_generator` · `markdown_formatter` ·
+`markdown_table_generator` · `markdown_to_html` · `mock_generator` ·
+`pdf_toolkit` · `qr_generator` · `random_data_generator` · `regex_tester` ·
+`report_generator` · `slug_gen` · `slug_generator` · `text_diff` ·
+`text_encoding_detector` · `text_replacer` · `timestamp_converter` ·
+`timezone_converter` · `unit_converter` · `url_encoder` · `uuid_gen` ·
+`xml_formatter` · `xml_to_json` · `yaml_validator` _(and more)_
+
+---
+
+## 🚀 Installation
+
+### Prerequisites
+
+- [Rust](https://rustup.rs) ≥ 1.85
+- Python ≥ 3.10
+
+### Build from source
+
+```bash
+git clone https://github.com/jimmychau1997/sovereign-omni-tool.git
+cd sovereign-omni-tool
+cargo build --release
+```
+
+The binary is at `target/release/sov`.
+
+### Add to PATH
+
+```bash
+# Option A — copy to /usr/local/bin
+sudo cp target/release/sov /usr/local/bin/
+
+# Option B — symlink
+ln -s "$(pwd)/target/release/sov" ~/.local/bin/sov
+
+# Option C — cargo install (once published to crates.io)
+cargo install sov
+```
+
+### Install Python tools
+
+Place your tool scripts in the `tools/` directory (see
+[Tool Discovery](#-tool-discovery)) and verify:
+
+```bash
+sov list
+```
+
+---
+
+## 🛠 Usage
+
+```
+sov [COMMAND]
+```
+
+| Command | Description |
+|---------|-------------|
+| `sov list` | List all discovered tools |
+| `sov list --json` | Machine-readable JSON list of tools |
+| `sov <tool> [args...]` | Run a specific tool |
+| `sov mcp` | Start the MCP server over STDIO |
+| `sov limit-rate --rate <N>` | Throttle stdin to N lines/second |
+| `sov --help` | Full help |
+| `sov --version` | Print version |
+
+### Examples
+
+```bash
+# List all available tools
+sov list
+
+# Run a tool
+sov port_scanner --range 1-1024 example.com
+sov csv_to_json data.csv
+sov password_gen --strength strong
+sov dns_lookup --all github.com
+sov hash_calculator myfile.zip
+sov base64_codec encode "hello world"
+
+# Get help for any tool
+sov <tool_name> --help
+```
+
+---
+
+## 🔍 Tool Discovery
+
+`sov` searches for `*.py` files in these directories (in order):
+
+| Priority | Location |
+|----------|----------|
+| 1 | `$SOV_TOOLS_PATH` — colon-separated list (`:` on Unix, `;` on Windows) |
+| 2 | `<binary-dir>/tools/` |
+| 3 | `<binary-dir>/../tools/` |
+| 4 | `<binary-dir>/../share/sov/tools/` (FHS install layout) |
+| 5 | `~/.local/share/sov/tools/` (Unix) / `%APPDATA%\sov\tools\` (Windows) |
+
+Files whose names start with `test_` or equal `__init__` are excluded.
+
+### Override example
+
+```bash
+export SOV_TOOLS_PATH="/opt/my-tools:/home/alice/tools"
+sov list
+```
+
+---
+
+## 🤖 MCP Server
+
+`sov` ships with a [FastMCP](https://github.com/jlowin/fastmcp) wrapper that
+exposes all tools to any MCP-compatible LLM client (e.g. Claude Desktop).
+
+### Start the server
+
 ```bash
 pip install mcp
 python3 sov_mcp.py
 ```
 
-## 🤝 Contributing
+### Configuration
 
-We are extremely new and still actively building the ecosystem. All PRs, suggestions, and feature requests are warmly welcomed! 
+| Environment variable | Default | Description |
+|----------------------|---------|-------------|
+| `SOV_BIN` | `sov` on `$PATH`, then build outputs | Path to the `sov` binary |
+| `SOV_DUMP_PATH` | `arsenal_dump.json` next to the script | Path to the tool-descriptions file |
+
+### Claude Desktop integration
+
+Add to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "sovereign-omni-tool": {
+      "command": "python3",
+      "args": ["/path/to/sovereign-omni-tool/sov_mcp.py"]
+    }
+  }
+}
+```
 
 ---
-*Built with ❤️ for the Open Source Community.*
+
+## 🔧 Adding Your Own Tools
+
+1. Create `tools/<your_tool>.py` — see [`tools/README.md`](tools/README.md) for
+   the template and requirements.
+2. Verify it appears in the tool list:
+   ```bash
+   sov list
+   sov your_tool --help
+   ```
+3. _(Optional)_ Regenerate the description cache:
+   ```bash
+   python3 categorize_arsenal.py
+   ```
+
+---
+
+## ⚙️ Configuration
+
+| Variable | Description |
+|----------|-------------|
+| `SOV_TOOLS_PATH` | Colon-separated list of directories to search for tool scripts |
+| `SOV_BIN` | Path to `sov` binary used by `sov_mcp.py` |
+| `SOV_DUMP_PATH` | Path to `arsenal_dump.json` used by `sov_mcp.py` |
+
+---
+
+## 💻 Development
+
+```bash
+# Build
+cargo build
+
+# Run all Rust tests
+cargo test
+
+# Lint
+cargo clippy -- -D warnings
+
+# Format
+cargo fmt
+
+# Python lint
+pip install ruff
+ruff check sov_mcp.py
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions are very welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md)
+before opening a pull request.
+
+We follow the [Contributor Covenant](CODE_OF_CONDUCT.md) code of conduct.
+
+---
+
+## 📄 License
+
+[MIT](LICENSE) © 2025 Sovereign Forge
+

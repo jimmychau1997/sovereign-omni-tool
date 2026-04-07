@@ -1,7 +1,15 @@
 [package]
 name = "sov"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2024"
+description = "Sovereign Omni-Tool — a unified developer Swiss Army Knife spanning 114+ utilities"
+license = "MIT"
+repository = "https://github.com/jimmychau1997/sovereign-omni-tool"
+homepage = "https://github.com/jimmychau1997/sovereign-omni-tool"
+documentation = "https://github.com/jimmychau1997/sovereign-omni-tool#readme"
+keywords = ["cli", "devtools", "mcp", "automation", "toolkit"]
+categories = ["command-line-utilities", "development-tools"]
+readme = "README.md"
 
 [dependencies]
 clap = { version = "4.4", features = ["derive"] }
@@ -9,3 +17,6 @@ tokio = { version = "1.32", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 anyhow = "1.0"
+
+[dev-dependencies]
+tempfile = "3"
