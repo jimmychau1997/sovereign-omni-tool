@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+- GitHub community health files: issue templates (bug report, feature request),
+  pull request template, and `SECURITY.md`.
+- CI now tests Python 3.10, 3.11, and 3.12 in a matrix and caches pip installs.
+- CI security-audit job using `cargo audit`.
+
+### Fixed
+- CI workflow and badge now correctly target the `master` default branch.
+- `CONTRIBUTING.md` and `pyproject.toml` CHANGELOG URL updated from `main` to
+  `master`.
+
+---
+
 ## [1.0.0] — 2025-04-07
 
 ### Added

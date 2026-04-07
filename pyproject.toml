@@ -30,7 +30,7 @@ dependencies = [
 Homepage = "https://github.com/jimmychau1997/sovereign-omni-tool"
 Repository = "https://github.com/jimmychau1997/sovereign-omni-tool"
 "Bug Tracker" = "https://github.com/jimmychau1997/sovereign-omni-tool/issues"
-Changelog = "https://github.com/jimmychau1997/sovereign-omni-tool/blob/main/CHANGELOG.md"
+Changelog = "https://github.com/jimmychau1997/sovereign-omni-tool/blob/master/CHANGELOG.md"
 
 [project.scripts]
 sov-mcp = "sov_mcp:main"
