@@ -88,7 +88,7 @@ sovereign-omni-tool/
    cargo test
    ```
 4. Commit using [Conventional Commits](#commit-messages).
-5. Open a Pull Request against `main`.
+5. Open a Pull Request against `master`.
 
 ---
 
